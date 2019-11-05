@@ -1,3 +1,6 @@
+// Import DB
+const db = require('../database/db');
+
 // Create a GIF controller
 const createGIF = (req, res, next) => {
   console.log('creating a GIF');
@@ -6,6 +9,9 @@ const createGIF = (req, res, next) => {
 // Create an Article controller
 const createArticle = (req, res, next) => {
   console.log('creating an Article');
+  res.status(200).json({
+    message: 'creating an article',
+  });
 };
 
 // Update Article controller
@@ -40,9 +46,18 @@ const commentOnGIF = (req, res, next) => {
 
 // View all articles
 const viewFeed = (req, res, next) => {
-  console.log('views');
-  res.status(200).json({
-    message: 'viewing feed',
+  db.connect((err, client, done) => {
+    if (err) throw err;
+    client.query('SELECT * FROM articles UNION SELECT * FROM gifs', (queryError, queryResult) => {
+      if (queryError) {
+        return console.error('error running query', err);
+      }
+      const data = queryResult.rows;
+      res.status(201).json({
+        data,
+      });
+      done();
+    });
   });
 };
 

@@ -33,7 +33,7 @@ router.post('/articles/:id/comment', contentCtrl.commentOnArticle);
 // Comment on another colleagues' GIF
 router.post('/gifs/:id/comment', contentCtrl.commentOnGIF);
 
-// View all articles
+// View all articles/gifs
 router.get('/feed', contentCtrl.viewFeed);
 
 // View a specific article

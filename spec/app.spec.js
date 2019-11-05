@@ -23,14 +23,15 @@ describe('Teamwork API testing', function () {
   describe('when a request is made to get all articles/gifs', function () {
     const data = {};
     beforeAll((done) => {
-      request.get(`${url}/api/v1/feed`, (err, res, body) => {
-        data.body = JSON.parse(body);
+      request.get(`${url}/api/v1/feed/`, (err, res, body) => {
+        data.body = JSON.parse(body).data;
+        console.log(data.body);
         done();
       });
     });
 
     it('should return an array of articles', function () {
-      expect(data.body.message).toBe('viewing feed');
+      expect(data.body).not.toEqual([]);
     });
   });
 });
