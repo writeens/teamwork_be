@@ -50,14 +50,51 @@ const viewFeed = (req, res, next) => {
     if (err) throw err;
     client.query('SELECT * FROM articles UNION SELECT * FROM gifs', (queryError, queryResult) => {
       if (queryError) {
-        return console.error('error running query', err);
+        res.status(501).json({
+          status: 'error',
+          error: 'unable to query database',
+        });
       }
-      const data = queryResult.rows;
-      res.status(201).json({
-        data,
-      });
-      done();
+      if (queryResult) {
+        const result = queryResult.rows;
+        const data = result.map((item) => {
+          if (item.type === 'gif') {
+            return {
+              id: item.articleId,
+              createdOn: item.createdOn,
+              title: item.title,
+              url: item.article,
+              authorId: item.authorId,
+            };
+          }
+          if (item.type === 'article') {
+            return {
+              id: item.articleId,
+              createdOn: item.createdOn,
+              title: item.title,
+              article: item.article,
+              authorId: item.authorId,
+            };
+          }
+        });
+        res.status(201).json({
+          status: 'success',
+          data,
+        });
+        done();
+      }
     });
+    // client.query('SELECT * FROM articles', (queryError, queryResult) => {
+    //   if (queryError) {
+    //     res.status(501).json({
+    //       status: 'error',
+    //       error: 'unable to query database',
+    //     });
+    //   }
+    //   if (queryResult) {
+    //     result = [result, ...queryResult.rows];
+    //   }
+    // });
   });
 };
 

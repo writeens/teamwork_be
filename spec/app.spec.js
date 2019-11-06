@@ -25,13 +25,31 @@ describe('Teamwork API testing', function () {
     beforeAll((done) => {
       request.get(`${url}/api/v1/feed/`, (err, res, body) => {
         data.body = JSON.parse(body).data;
-        console.log(data.body);
+        // console.log(data.body);
         done();
       });
     });
 
     it('should return an array of articles', function () {
       expect(data.body).not.toEqual([]);
+    });
+
+    it('each article/gif should contain an Id with type Integer', function () {
+      expect(data.body[0].id).toBeDefined();
+      expect(data.body[0].id).not.toBeNaN();
+    });
+    it('each article/gif should contain a createdOn', function () {
+      expect(data.body[0].createdOn).toBeDefined();
+    });
+    it('each article/gif should contain a title with type String', function () {
+      expect(data.body[0].title).toBeDefined();
+    });
+    it('each article/gif should contain a url with type String', function () {
+      expect(data.body[0].url || data.body[0].article).toBeDefined();
+    });
+    it('each article/gif should contain a authorId with type Integer', function () {
+      expect(data.body[0].authorId).toBeDefined();
+      expect(data.body[0].authorId).not.toBeNaN();
     });
   });
 });
