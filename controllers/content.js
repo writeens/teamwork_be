@@ -8,9 +8,43 @@ const createGIF = (req, res, next) => {
 
 // Create an Article controller
 const createArticle = (req, res, next) => {
-  console.log('creating an Article');
-  res.status(200).json({
-    message: 'creating an article',
+  db.connect((err, client, done) => {
+    if (err) throw err;
+    // Author Id is derived from the body for now
+    // Will use header unique token details in update
+    client.query('INSERT INTO public.articles (title, article, "authorId", type, "createdOn") VALUES ($1, $2, $3, $4, NOW())',
+      [req.body.title, req.body.article, req.body.authorId, 'article'], (queryError, queryResult) => {
+        if (queryError) {
+          res.status(501).json({
+            status: 'error',
+            error: 'unable to post article',
+          });
+        }
+        if (queryResult) {
+          client.query('SELECT * FROM articles WHERE "authorId"=1 ORDER BY "createdOn" DESC LIMIT 1', (newQueryError, newQueryResult) => {
+            const data = newQueryResult;
+            if (newQueryError) {
+              res.status(501).json({
+                status: 'error',
+                error: 'unable to post article',
+              });
+            }
+            if (newQueryResult) {
+              res.status(201).json({
+                status: 'success',
+                data: {
+                  message: 'Article successfully created',
+                  articleId: data.rows[0].articleId,
+                  createdOn: data.rows[0].createdOn,
+                  title: data.rows[0].title,
+                },
+              });
+            }
+          });
+        }
+      });
+
+    done();
   });
 };
 
