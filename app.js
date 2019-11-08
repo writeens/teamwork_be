@@ -7,6 +7,9 @@ const bodyParser = require('body-parser');
 // Import Item Routes
 const contentRoutes = require('./routes/content');
 
+// Import User Routes
+const userRoutes = require('./routes/user');
+
 // Create Instance of Express
 const app = express();
 
@@ -23,5 +26,6 @@ app.use(bodyParser.json());
 
 // Create item routes
 app.use('/api/v1', contentRoutes);
+app.use('/api/v1/auth', userRoutes);
 
 module.exports = app;

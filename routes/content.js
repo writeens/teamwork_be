@@ -1,11 +1,14 @@
 // Import Express
 const express = require('express');
 
-// Create Router
-const router = express.Router();
+// Import Authentication
+const auth = require('../middleware/auth');
 
 // Import Content Controllers
 const contentCtrl = require('../controllers/content');
+
+// Create Router
+const router = express.Router();
 
 /** Routes */
 
@@ -13,7 +16,7 @@ const contentCtrl = require('../controllers/content');
 router.post('/gifs', contentCtrl.createArticle);
 
 // Create an article
-router.post('/articles', contentCtrl.createArticle);
+router.post('/articles', auth, contentCtrl.createArticle);
 
 // Update an article
 router.put('/articles', contentCtrl.updateArticle);
@@ -34,7 +37,7 @@ router.post('/articles/:id/comment', contentCtrl.commentOnArticle);
 router.post('/gifs/:id/comment', contentCtrl.commentOnGIF);
 
 // View all articles/gifs
-router.get('/feed', contentCtrl.viewFeed);
+router.get('/feed', auth, contentCtrl.viewFeed);
 
 // View a specific article
 router.get('/articles/:id', contentCtrl.viewAnArticle);

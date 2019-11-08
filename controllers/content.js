@@ -1,5 +1,7 @@
 // Import DB
+const jwt = require('jsonwebtoken');
 const db = require('../database/db');
+// Import JWT
 
 // Create a GIF controller
 const createGIF = (req, res, next) => {
@@ -8,12 +10,13 @@ const createGIF = (req, res, next) => {
 
 // Create an Article controller
 const createArticle = (req, res, next) => {
+  const { userId } = req.decoded;
   db.connect((err, client, done) => {
     if (err) throw err;
     // Author Id is derived from the body for now
     // Will use header unique token details in update
     client.query('INSERT INTO public.articles (title, article, "authorId", type, "createdOn") VALUES ($1, $2, $3, $4, NOW())',
-      [req.body.title, req.body.article, req.body.authorId, 'article'], (queryError, queryResult) => {
+      [req.body.title, req.body.article, userId, 'article'], (queryError, queryResult) => {
         if (queryError) {
           res.status(501).json({
             status: 'error',

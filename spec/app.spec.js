@@ -23,9 +23,8 @@ describe('Teamwork API testing', function () {
   describe('when a request is made to get all articles/gifs', function () {
     const data = {};
     beforeAll((done) => {
-      request.get(`${url}/api/v1/feed/`, (err, res, body) => {
-        data.body = JSON.parse(body).data;
-        // console.log(data.body);
+      request.get(`${url}/api/v1/feed/`, { json: true }, (err, res, body) => {
+        data.body = body.data;
         done();
       });
     });
@@ -50,6 +49,42 @@ describe('Teamwork API testing', function () {
     it('each article/gif should contain a authorId with type Integer', function () {
       expect(data.body[0].authorId).toBeDefined();
       expect(data.body[0].authorId).not.toBeNaN();
+    });
+  });
+
+  /** Authentication Tests */
+  // Post request is made to create the user
+  // Query to Delete All - DELETE FROM users WHERE users."firstName" = 'John'
+  describe('when a user request is made', function () {
+    let data = {};
+    beforeAll((done) => {
+      request({
+        uri: `${url}/api/v1/auth/create-user`,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        json: {
+          firstName: 'John',
+          lastName: 'Wicked',
+          email: 'vadewusi@wiki.co',
+          password: 'weak',
+          gender: 'Male',
+          jobRole: 'Developer',
+          department: 'Engineering',
+          address: 'Radisson Blu',
+        },
+      }, (err, res, body) => {
+        data = body;
+        done();
+      });
+    });
+
+    it('should return a status of success', function () {
+      expect(data.status).toBe('success');
+    });
+    it('should return a token', function () {
+      expect(data.data.token).not.toBeUndefined();
     });
   });
 });
