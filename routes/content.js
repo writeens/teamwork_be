@@ -24,9 +24,6 @@ router.post('/articles', auth, contentCtrl.createArticle);
 // Update an article
 router.put('/articles/:id', auth, contentCtrl.updateArticle);
 
-// Update a GIF
-router.put('/gifs/:id', auth, contentCtrl.updateGIF);
-
 // Delete an article
 router.delete('/articles/:id', auth, contentCtrl.deleteArticle);
 
@@ -44,5 +41,8 @@ router.get('/feed', auth, contentCtrl.viewFeed);
 
 // View a specific article
 router.get('/articles/:id', contentCtrl.viewAnArticle);
+
+// View a specific gif
+router.get('/gifs/:id', contentCtrl.viewAGIF);
 
 module.exports = router;

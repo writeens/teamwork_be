@@ -112,6 +112,7 @@ const updateArticle = (req, res, next) => {
   const { id } = req.params;
   db.connect((err, client, done) => {
     if (err) throw err;
+    // Check if the user is the author of the post
     client.query('SELECT * FROM articles WHERE "authorId"=$1 AND "articleId"=$2',
       [userId, id], (selectQueryError, selectQueryResult) => {
         if (selectQueryError) throw selectQueryError;
@@ -121,6 +122,7 @@ const updateArticle = (req, res, next) => {
             message: 'You are not authorized to make edits on this post',
           });
         }
+        // Only allow authors update their posts
         if (selectQueryResult.rows.length > 0) {
           client.query('UPDATE articles SET title=$1, article=$2 WHERE "articleId" = $3 AND "authorId" = $4',
             [req.body.title, req.body.article, id, userId],
@@ -135,6 +137,7 @@ const updateArticle = (req, res, next) => {
                     article: req.body.article,
                   },
                 });
+                done();
               }
             });
         }
@@ -142,14 +145,37 @@ const updateArticle = (req, res, next) => {
   });
 };
 
-// Update GIF controller
-const updateGIF = (req, res, next) => {
-  console.log('updating an GIF');
-};
-
 // Delete Article controller
 const deleteArticle = (req, res, next) => {
-  console.log('deleting an article');
+  const { userId } = req.decoded;
+  const { id } = req.params;
+  db.connect((err, client, done) => {
+    client.query('SELECT * FROM articles WHERE "authorId"=$1 AND "articleId"=$2',
+      [userId, id], (selectQueryError, selectQueryResult) => {
+        if (selectQueryError) throw selectQueryError;
+        if (selectQueryResult.rows.length === 0) {
+          return res.status(400).json({
+            status: 'error',
+            message: 'You are not authorized to delete this post',
+          });
+        }
+        if (selectQueryResult.rows.length > 0) {
+          client.query('DELETE FROM articles WHERE "articleId"=$1 AND "authorId"=$2',
+            [id, userId], (deleteQueryError, deleteQueryResult) => {
+              if (deleteQueryError) throw deleteQueryError;
+              if (deleteQueryResult) {
+                res.status(200).json({
+                  status: 'success',
+                  data: {
+                    message: 'Article successfully deleted',
+                  },
+                });
+                done();
+              }
+            });
+        }
+      });
+  });
 };
 
 // Delete GIF controller
@@ -210,16 +236,21 @@ const viewFeed = (req, res, next) => {
   });
 };
 
-// Viewing all GIFs
+// Viewing an article
 const viewAnArticle = (req, res, next) => {
   console.log('viewing an article');
+};
+
+// Viewing a GIF controller
+const viewAGIF = (req, res, next) => {
+  console.log('viewing a GIF');
 };
 
 module.exports = {
   createGIF,
   createArticle,
   updateArticle,
-  updateGIF,
+  viewAGIF,
   deleteArticle,
   deleteGIF,
   commentOnArticle,
