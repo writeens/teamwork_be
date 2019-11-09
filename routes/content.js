@@ -22,13 +22,13 @@ router.post('/gifs', auth, multer, contentCtrl.createGIF);
 router.post('/articles', auth, contentCtrl.createArticle);
 
 // Update an article
-router.put('/articles', contentCtrl.updateArticle);
+router.put('/articles/:id', auth, contentCtrl.updateArticle);
 
 // Update a GIF
-router.put('/gifs', contentCtrl.updateGIF);
+router.put('/gifs/:id', auth, contentCtrl.updateGIF);
 
 // Delete an article
-router.delete('/articles/:id', contentCtrl.deleteArticle);
+router.delete('/articles/:id', auth, contentCtrl.deleteArticle);
 
 // Delete a GIF
 router.delete('/articles/:id', contentCtrl.deleteGIF);

@@ -108,7 +108,38 @@ const createArticle = (req, res, next) => {
 
 // Update Article controller
 const updateArticle = (req, res, next) => {
-  console.log('updating an Article');
+  const { userId } = req.decoded;
+  const { id } = req.params;
+  db.connect((err, client, done) => {
+    if (err) throw err;
+    client.query('SELECT * FROM articles WHERE "authorId"=$1 AND "articleId"=$2',
+      [userId, id], (selectQueryError, selectQueryResult) => {
+        if (selectQueryError) throw selectQueryError;
+        if (selectQueryResult.rows.length === 0) {
+          return res.status(400).json({
+            status: 'error',
+            message: 'You are not authorized to make edits on this post',
+          });
+        }
+        if (selectQueryResult.rows.length > 0) {
+          client.query('UPDATE articles SET title=$1, article=$2 WHERE "articleId" = $3 AND "authorId" = $4',
+            [req.body.title, req.body.article, id, userId],
+            (updateQueryError, updateQueryResult) => {
+              if (updateQueryError) throw updateQueryError;
+              if (updateQueryResult) {
+                res.status(200).json({
+                  status: 'success',
+                  data: {
+                    message: 'Article successfully updated',
+                    title: req.body.title,
+                    article: req.body.article,
+                  },
+                });
+              }
+            });
+        }
+      });
+  });
 };
 
 // Update GIF controller
