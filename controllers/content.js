@@ -1,11 +1,68 @@
+const dotenv = require('dotenv');
+// Import Cloudinary
+const cloudinary = require('cloudinary').v2;
 // Import DB
-const jwt = require('jsonwebtoken');
 const db = require('../database/db');
-// Import JWT
+// Import DataUri
+// Import Multer Config
+const { dataUri } = require('../middleware/multer-config');
+// Dot Env Config
+dotenv.config();
+// Cloudinary Config
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
 
 // Create a GIF controller
 const createGIF = (req, res, next) => {
-  console.log('creating a GIF');
+  // Get the userId and store it
+  const { userId } = req.decoded;
+  if (req.file) {
+    // Decode Buffer and store in a file
+    const file = dataUri(req).content;
+    // Upload to Cloudinary
+    cloudinary.uploader.upload(file, {
+      folder: 'teamwork',
+      use_filename: true,
+    }, (error, result) => {
+      if (error) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Unable to upload, try again later',
+        });
+      }
+
+
+      db.connect((err, client, done) => {
+        if (err) throw (err);
+        client.query('INSERT INTO gifs ("createdOn", title, "imageUrl", "authorId", "type") VALUES(NOW(), $1, $2, $3, $4)',
+          [req.body.title, result.url, userId, 'gif'], (InsertQueryError, InsertQueryResult) => {
+            if (InsertQueryError) throw InsertQueryError;
+            if (InsertQueryResult) {
+              client.query('SELECT * FROM gifs WHERE "authorId"=1 ORDER BY "createdOn" DESC LIMIT 1', (selectQueryError, selectQueryResult) => {
+                if (selectQueryError) throw selectQueryError;
+                if (selectQueryResult) {
+                  const data = selectQueryResult.rows;
+                  res.status(200).json({
+                    status: 'success',
+                    data: {
+                      gifId: data.gifId,
+                      message: 'GIF image successfully posted',
+                      createdOn: data.createdOn,
+                      title: data.title,
+                      imageUrl: data.imageUrl,
+                    },
+                  });
+                  done();
+                }
+              });
+            }
+          });
+      });
+    });
+  }
 };
 
 // Create an Article controller
@@ -13,8 +70,7 @@ const createArticle = (req, res, next) => {
   const { userId } = req.decoded;
   db.connect((err, client, done) => {
     if (err) throw err;
-    // Author Id is derived from the body for now
-    // Will use header unique token details in update
+    // Get userID from token in header
     client.query('INSERT INTO public.articles (title, article, "authorId", type, "createdOn") VALUES ($1, $2, $3, $4, NOW())',
       [req.body.title, req.body.article, userId, 'article'], (queryError, queryResult) => {
         if (queryError) {
@@ -27,7 +83,7 @@ const createArticle = (req, res, next) => {
           client.query('SELECT * FROM articles WHERE "authorId"=1 ORDER BY "createdOn" DESC LIMIT 1', (newQueryError, newQueryResult) => {
             const data = newQueryResult;
             if (newQueryError) {
-              res.status(501).json({
+              return res.status(501).json({
                 status: 'error',
                 error: 'unable to post article',
               });
@@ -42,12 +98,11 @@ const createArticle = (req, res, next) => {
                   title: data.rows[0].title,
                 },
               });
+              done();
             }
           });
         }
       });
-
-    done();
   });
 };
 
@@ -121,17 +176,6 @@ const viewFeed = (req, res, next) => {
         done();
       }
     });
-    // client.query('SELECT * FROM articles', (queryError, queryResult) => {
-    //   if (queryError) {
-    //     res.status(501).json({
-    //       status: 'error',
-    //       error: 'unable to query database',
-    //     });
-    //   }
-    //   if (queryResult) {
-    //     result = [result, ...queryResult.rows];
-    //   }
-    // });
   });
 };
 

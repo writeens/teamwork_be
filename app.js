@@ -1,3 +1,5 @@
+// Import Path
+const path = require('path');
 // Import Express
 const express = require('express');
 
@@ -23,6 +25,9 @@ app.use((req, res, next) => {
 
 // Set bodyParser's JSON function as global middleware
 app.use(bodyParser.json());
+
+// Setup gif storage on the server
+// app.use('/gifs', express.static(path.join(__dirname, 'gifs')));
 
 // Create item routes
 app.use('/api/v1', contentRoutes);

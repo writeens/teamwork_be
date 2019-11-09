@@ -7,13 +7,16 @@ const auth = require('../middleware/auth');
 // Import Content Controllers
 const contentCtrl = require('../controllers/content');
 
+// Import Multer Config
+const multer = require('../middleware/multer-config').multerUpload;
+
 // Create Router
 const router = express.Router();
 
 /** Routes */
 
 // Create a GIF
-router.post('/gifs', contentCtrl.createArticle);
+router.post('/gifs', auth, multer, contentCtrl.createGIF);
 
 // Create an article
 router.post('/articles', auth, contentCtrl.createArticle);
