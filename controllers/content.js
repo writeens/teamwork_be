@@ -180,16 +180,49 @@ const deleteArticle = (req, res, next) => {
 
 // Delete GIF controller
 const deleteGIF = (req, res, next) => {
+  const { userId } = req.decoded;
+  const { id } = req.params;
+  console.log(userId, id);
   console.log('deleting a GIF');
 };
 
 // Comment on Article controller
 const commentOnArticle = (req, res, next) => {
-  console.log('commenting on an article');
+  const { userId } = req.decoded;
+  const { id } = req.params;
+  db.connect((err, client, done) => {
+    client.query('INSERT INTO "articleComments" ("createdOn", comment, "authorId", "articleId") VALUES(NOW(), $1, $2, $3)',
+      [req.body.comment, userId, id], (insertQueryError, insertQueryResult) => {
+        if (insertQueryError) throw insertQueryError;
+        if (insertQueryResult) {
+          // Check DB for recently made comment and get the details
+          const query = 'SELECT public."articleComments"."createdOn", public.articles.title, public.articles.article, public."articleComments".comment FROM public."articleComments" INNER JOIN articles ON "articleComments"."articleId" = articles."articleId" ORDER BY "createdOn" DESC LIMIT 1';
+          client.query(query, (selectQueryError, selectQueryResult) => {
+            if (selectQueryError) throw selectQueryError;
+            if (selectQueryResult) {
+              const data = selectQueryResult.rows[0];
+              res.status(201).json({
+                status: 'success',
+                data: {
+                  message: 'Comment successfully created',
+                  createdOn: data.createdOn,
+                  articleTitle: data.title,
+                  article: data.article,
+                  comment: data.comment,
+                },
+              });
+              done();
+            }
+          });
+        }
+      });
+  });
 };
 
 // Comment on GIF controller
 const commentOnGIF = (req, res, next) => {
+  const { userId } = req.decoded;
+  const { id } = req.params;
   console.log('commenting on a GIF');
 };
 

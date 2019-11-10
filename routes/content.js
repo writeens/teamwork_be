@@ -31,10 +31,10 @@ router.delete('/articles/:id', auth, contentCtrl.deleteArticle);
 router.delete('/articles/:id', contentCtrl.deleteGIF);
 
 // Comment on other colleagues' articles
-router.post('/articles/:id/comment', contentCtrl.commentOnArticle);
+router.post('/articles/:id/comment', auth, contentCtrl.commentOnArticle);
 
 // Comment on another colleagues' GIF
-router.post('/gifs/:id/comment', contentCtrl.commentOnGIF);
+router.post('/gifs/:id/comment', auth, contentCtrl.commentOnGIF);
 
 // View all articles/gifs
 router.get('/feed', auth, contentCtrl.viewFeed);
