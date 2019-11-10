@@ -348,13 +348,40 @@ const viewFeed = (req, res, next) => {
 
 // Viewing an article
 const viewAnArticle = (req, res, next) => {
-  const { userId } = req.decoded;
+  // const { userId } = req.decoded;
   const { id } = req.params;
-  console.log(userId, id);
   db.connect((err, client, done) => {
-
+    if (err) throw err;
+    // Get the article
+    client.query('SELECT * FROM articles WHERE "articleId"=$1', [id], (selectQueryError, selectQueryResult) => {
+      if (selectQueryError) throw selectQueryError;
+      if (selectQueryResult) {
+        const {
+          articleId, createdOn, title, article,
+        } = selectQueryResult.rows[0];
+        // Get all comments associated with the article
+        client.query('SELECT "commentId", comment, "authorId" FROM public."articleComments" WHERE "articleId"=$1', [id],
+          (newSelectQueryError, newSelectQueryResult) => {
+            if (newSelectQueryError) throw newSelectQueryError;
+            if (newSelectQueryResult) {
+              const comments = newSelectQueryResult.rows;
+              // Return response
+              res.status(200).json({
+                status: 'success',
+                data: {
+                  id: articleId,
+                  createdOn,
+                  title,
+                  article,
+                  comments,
+                },
+              });
+              done();
+            }
+          });
+      }
+    });
   });
-  console.log('viewing an article');
 };
 
 // Viewing a GIF controller
