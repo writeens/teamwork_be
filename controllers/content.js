@@ -37,8 +37,8 @@ const createGIF = (req, res, next) => {
 
       db.connect((err, client, done) => {
         if (err) throw (err);
-        client.query('INSERT INTO gifs ("createdOn", title, "imageUrl", "authorId", "type") VALUES(NOW(), $1, $2, $3, $4)',
-          [req.body.title, result.url, userId, 'gif'], (InsertQueryError, InsertQueryResult) => {
+        client.query('INSERT INTO gifs ("createdOn", title, "imageUrl", "authorId", "type", "publicId") VALUES(NOW(), $1, $2, $3, $4, $5)',
+          [req.body.title, result.url, userId, 'gif', result.public_id], (InsertQueryError, InsertQueryResult) => {
             if (InsertQueryError) throw InsertQueryError;
             if (InsertQueryResult) {
               client.query('SELECT * FROM gifs WHERE "authorId"=1 ORDER BY "createdOn" DESC LIMIT 1', (selectQueryError, selectQueryResult) => {
@@ -161,19 +161,26 @@ const deleteArticle = (req, res, next) => {
           });
         }
         if (selectQueryResult.rows.length > 0) {
-          client.query('DELETE FROM articles WHERE "articleId"=$1 AND "authorId"=$2',
-            [id, userId], (deleteQueryError, deleteQueryResult) => {
-              if (deleteQueryError) throw deleteQueryError;
-              if (deleteQueryResult) {
-                res.status(200).json({
-                  status: 'success',
-                  data: {
-                    message: 'Article successfully deleted',
-                  },
+          // Delete all comments associated with that article
+          client.query('DELETE FROM "articleComments" WHERE "articleId"=$1', [id], (deleteQueryError, deleteQueryResult) => {
+            if (deleteQueryError) throw deleteQueryError;
+            if (deleteQueryResult) {
+              // Delete the article itself
+              client.query('DELETE FROM articles WHERE "articleId"=$1 AND "authorId"=$2',
+                [id, userId], (newDeleteQueryError, newDeleteQueryResult) => {
+                  if (newDeleteQueryError) throw newDeleteQueryError;
+                  if (newDeleteQueryResult) {
+                    res.status(200).json({
+                      status: 'success',
+                      data: {
+                        message: 'Article successfully deleted',
+                      },
+                    });
+                    done();
+                  }
                 });
-                done();
-              }
-            });
+            }
+          });
         }
       });
   });
@@ -183,8 +190,49 @@ const deleteArticle = (req, res, next) => {
 const deleteGIF = (req, res, next) => {
   const { userId } = req.decoded;
   const { id } = req.params;
-  console.log(userId, id);
-  console.log('deleting a GIF');
+  db.connect((err, client, done) => {
+    if (err) throw err;
+    client.query('SELECT "publicId" FROM gifs WHERE "gifId" = $1 AND "authorId"=$2', [id, userId], (selectQueryError, selectQueryResult) => {
+      if (selectQueryError) throw selectQueryError;
+      if (selectQueryResult.rows.length === 0) {
+        return res.status(401).json({
+          status: 'error',
+          message: 'You are not authorized to delete this GIF',
+        });
+      }
+      if (selectQueryResult.rows.length > 0) {
+        const { publicId } = selectQueryResult.rows[0];
+        cloudinary.uploader.destroy(publicId, (error, result) => {
+          if (error) {
+            return res.status(401).json({
+              status: 'error',
+              message: 'Unable to delete GIF, try again later',
+            });
+          }
+          if (result.result === 'ok') {
+            // Delete all comments associated with that GIF
+            client.query('DELETE FROM "gifComments" WHERE "gifId" = $1', [id], (deleteQueryError, deleteQueryResult) => {
+              if (deleteQueryError) throw deleteQueryError;
+              if (deleteQueryResult) {
+                // Delete the GIF itself
+                client.query('DELETE FROM "gifs" WHERE "gifId" = $1', [id], (newDeleteQueryError, newDeleteQueryResult) => {
+                  if (newDeleteQueryError) throw newDeleteQueryError;
+                  if (newDeleteQueryResult) {
+                    res.status(200).json({
+                      status: 'success',
+                      data: {
+                        message: 'gif post successfully deleted',
+                      },
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+  });
 };
 
 // Comment on Article controller
@@ -300,6 +348,12 @@ const viewFeed = (req, res, next) => {
 
 // Viewing an article
 const viewAnArticle = (req, res, next) => {
+  const { userId } = req.decoded;
+  const { id } = req.params;
+  console.log(userId, id);
+  db.connect((err, client, done) => {
+
+  });
   console.log('viewing an article');
 };
 

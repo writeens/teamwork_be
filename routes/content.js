@@ -28,7 +28,7 @@ router.put('/articles/:id', auth, contentCtrl.updateArticle);
 router.delete('/articles/:id', auth, contentCtrl.deleteArticle);
 
 // Delete a GIF
-router.delete('/articles/:id', contentCtrl.deleteGIF);
+router.delete('/gifs/:id', auth, contentCtrl.deleteGIF);
 
 // Comment on other colleagues' articles
 router.post('/articles/:id/comment', auth, contentCtrl.commentOnArticle);
@@ -40,9 +40,9 @@ router.post('/gifs/:id/comment', auth, contentCtrl.commentOnGIF);
 router.get('/feed', auth, contentCtrl.viewFeed);
 
 // View a specific article
-router.get('/articles/:id', contentCtrl.viewAnArticle);
+router.get('/articles/:id', auth, contentCtrl.viewAnArticle);
 
 // View a specific gif
-router.get('/gifs/:id', contentCtrl.viewAGIF);
+router.get('/gifs/:id', auth, contentCtrl.viewAGIF);
 
 module.exports = router;
