@@ -150,6 +150,7 @@ const deleteArticle = (req, res, next) => {
   const { userId } = req.decoded;
   const { id } = req.params;
   db.connect((err, client, done) => {
+    if (err) throw err;
     client.query('SELECT * FROM articles WHERE "authorId"=$1 AND "articleId"=$2',
       [userId, id], (selectQueryError, selectQueryResult) => {
         if (selectQueryError) throw selectQueryError;
@@ -223,7 +224,35 @@ const commentOnArticle = (req, res, next) => {
 const commentOnGIF = (req, res, next) => {
   const { userId } = req.decoded;
   const { id } = req.params;
-  console.log('commenting on a GIF');
+  db.connect((err, client, done) => {
+    if (err) throw err;
+    // Add Comment to the Database
+    client.query('INSERT INTO "gifComments" ("createdOn", comment, "authorId", "gifId") VALUES(NOW(), $1, $2, $3)',
+      [req.body.comment, userId, id], (insertQueryError, insertQueryResult) => {
+        if (insertQueryError) throw insertQueryError;
+        // Successfully Added to DB
+        if (insertQueryResult) {
+          const query = 'SELECT public."gifComments"."createdOn", public.gifs.title, public."gifComments".comment FROM public."gifComments" INNER JOIN gifs ON "gifComments"."gifId" = gifs."gifId" ORDER BY "createdOn" DESC LIMIT 1';
+          // Query DB to get associated GIF details
+          client.query(query, (selectQueryError, selectQueryResult) => {
+            if (selectQueryError) throw selectQueryError;
+            if (selectQueryResult) {
+              const data = selectQueryResult.rows[0];
+              res.status(201).json({
+                status: 'success',
+                data: {
+                  message: 'Comment successfully created',
+                  createdOn: data.createdOn,
+                  gifTitle: data.title,
+                  comment: data.comment,
+                },
+              });
+              done();
+            }
+          });
+        }
+      });
+  });
 };
 
 // View all articles
