@@ -348,14 +348,19 @@ const viewFeed = (req, res, next) => {
 
 // Viewing an article
 const viewAnArticle = (req, res, next) => {
-  // const { userId } = req.decoded;
   const { id } = req.params;
   db.connect((err, client, done) => {
     if (err) throw err;
     // Get the article
     client.query('SELECT * FROM articles WHERE "articleId"=$1', [id], (selectQueryError, selectQueryResult) => {
       if (selectQueryError) throw selectQueryError;
-      if (selectQueryResult) {
+      if (selectQueryResult.rows.length === 0) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Article does not exist, Please check request parameters and try again',
+        });
+      }
+      if (selectQueryResult.rows.length > 0) {
         const {
           articleId, createdOn, title, article,
         } = selectQueryResult.rows[0];
@@ -386,7 +391,46 @@ const viewAnArticle = (req, res, next) => {
 
 // Viewing a GIF controller
 const viewAGIF = (req, res, next) => {
-  console.log('viewing a GIF');
+  // const { userId } = req.decoded;
+  const { id } = req.params;
+  db.connect((err, client, done) => {
+    if (err) throw err;
+    // Get the GIF
+    client.query('SELECT * FROM gifs WHERE "gifId"=$1', [id], (selectQueryError, selectQueryResult) => {
+      if (selectQueryError) throw selectQueryError;
+      if (selectQueryResult.rows.length === 0) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'GIF does not exist, Please check request parameters and try again',
+        });
+      }
+      if (selectQueryResult.rows.length > 0) {
+        const {
+          gifId, createdOn, title, imageUrl,
+        } = selectQueryResult.rows[0];
+        // Get all comments associated with the gif
+        client.query('SELECT "commentId", comment, "authorId" FROM public."gifComments" WHERE "gifId"=$1', [id],
+          (newSelectQueryError, newSelectQueryResult) => {
+            if (newSelectQueryError) throw newSelectQueryError;
+            if (newSelectQueryResult) {
+              const comments = newSelectQueryResult.rows;
+              // Return response
+              res.status(200).json({
+                status: 'success',
+                data: {
+                  id: gifId,
+                  createdOn,
+                  title,
+                  url: imageUrl,
+                  comments,
+                },
+              });
+              done();
+            }
+          });
+      }
+    });
+  });
 };
 
 module.exports = {
