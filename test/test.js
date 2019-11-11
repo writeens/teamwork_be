@@ -1,5 +1,6 @@
 /* eslint-disable global-require */
 /* eslint-disable no-undef */
+// \i /Users/Victor/Documents/Coding/Teamwork/teamwork_be/database/db.sql;
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const should = require('chai/register-should');

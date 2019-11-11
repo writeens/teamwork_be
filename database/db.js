@@ -1,6 +1,7 @@
 const { Pool } = require('pg');
 
 // DB connection string
+// const connectString = 'postgres://username:password@localhost/databasename';
 const connectString = 'postgres://teamwork:teamwork@localhost/teamwork';
 
 
