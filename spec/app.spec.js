@@ -7,8 +7,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 const url = process.env.baseURL;
-const auth = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjM5LCJpYXQiOjE1NzMzNzE1NzIsImV4cCI6MTU3MzQ1Nzk3Mn0.TqdP5oUgdsxS_41_ITVFduzKWgl4LRwEnrxYTCXBsQ8';
-
+const auth = `Bearer ${process.env.ADMIN_TOKEN}`;
 describe('Teamwork API testing', function () {
   // Start up server before test starts
   beforeAll(() => {
@@ -19,38 +18,6 @@ describe('Teamwork API testing', function () {
   afterAll(() => {
     server.close();
   });
-
-  // Post request is made to create the user
-  // describe('when a request is made to create a user', function () {
-  //   let result = {};
-  //   beforeAll((done) => {
-  //     request({
-  //       uri: `${url}/api/v1/auth/create-user`,
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       json: {
-  //         firstName: 'John',
-  //         lastName: 'Wicked',
-  //         email: 'vadewusi@wiki.co',
-  //         password: 'weak',
-  //         gender: 'Male',
-  //         jobRole: 'Developer',
-  //         department: 'Engineering',
-  //         address: 'Radisson Blu',
-  //       },
-  //     }, (err, res, body) => {
-  //       result = body;
-  //       done();
-  //     });
-  //   });
-
-  //   it('should return a status of success', function () {
-  //     // expect(result.status).toBe('success');
-  //     expect(result.status).toBe('success');
-  //   });
-  // });
 
   // Post request is made to login
   describe('when a request is made to login', function () {
@@ -63,12 +30,11 @@ describe('Teamwork API testing', function () {
           'Content-Type': 'application/json',
         },
         json: {
-          email: 'vadewusi@wiki.co',
-          password: 'weak',
+          email: 'admin@teamwork.com',
+          password: '12345',
         },
       }, (err, res, body) => {
         result = body;
-        authNew = `Bearer ${body.data.token}`;
         done();
       });
     });
@@ -109,8 +75,6 @@ describe('Teamwork API testing', function () {
       expect(result.data[0].authorId).not.toBeNaN();
     });
   });
-
-  /** Authentication Tests */
 
   // Post request is made to create an article
   describe('when a request is made to login', function () {
