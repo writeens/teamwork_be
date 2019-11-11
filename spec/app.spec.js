@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 const url = process.env.baseURL;
+const auth = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjM5LCJpYXQiOjE1NzMzNzE1NzIsImV4cCI6MTU3MzQ1Nzk3Mn0.TqdP5oUgdsxS_41_ITVFduzKWgl4LRwEnrxYTCXBsQ8';
 
 describe('Teamwork API testing', function () {
   // Start up server before test starts
@@ -19,72 +20,127 @@ describe('Teamwork API testing', function () {
     server.close();
   });
 
-  // Get request is made to retrieve the feed
-  describe('when a request is made to get all articles/gifs', function () {
-    const data = {};
-    beforeAll((done) => {
-      request.get(`${url}/api/v1/feed/`, { json: true }, (err, res, body) => {
-        data.body = body.data;
-        done();
-      });
-    });
-
-    it('should return an array of articles', function () {
-      expect(data.body).not.toEqual([]);
-    });
-
-    it('each article/gif should contain an Id with type Integer', function () {
-      expect(data.body[0].id).toBeDefined();
-      expect(data.body[0].id).not.toBeNaN();
-    });
-    it('each article/gif should contain a createdOn', function () {
-      expect(data.body[0].createdOn).toBeDefined();
-    });
-    it('each article/gif should contain a title with type String', function () {
-      expect(data.body[0].title).toBeDefined();
-    });
-    it('each article/gif should contain a url with type String', function () {
-      expect(data.body[0].url || data.body[0].article).toBeDefined();
-    });
-    it('each article/gif should contain a authorId with type Integer', function () {
-      expect(data.body[0].authorId).toBeDefined();
-      expect(data.body[0].authorId).not.toBeNaN();
-    });
-  });
-
-  /** Authentication Tests */
   // Post request is made to create the user
-  // Query to Delete All - DELETE FROM users WHERE users."firstName" = 'John'
-  describe('when a user request is made', function () {
-    let data = {};
+  // describe('when a request is made to create a user', function () {
+  //   let result = {};
+  //   beforeAll((done) => {
+  //     request({
+  //       uri: `${url}/api/v1/auth/create-user`,
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       json: {
+  //         firstName: 'John',
+  //         lastName: 'Wicked',
+  //         email: 'vadewusi@wiki.co',
+  //         password: 'weak',
+  //         gender: 'Male',
+  //         jobRole: 'Developer',
+  //         department: 'Engineering',
+  //         address: 'Radisson Blu',
+  //       },
+  //     }, (err, res, body) => {
+  //       result = body;
+  //       done();
+  //     });
+  //   });
+
+  //   it('should return a status of success', function () {
+  //     // expect(result.status).toBe('success');
+  //     expect(result.status).toBe('success');
+  //   });
+  // });
+
+  // Post request is made to login
+  describe('when a request is made to login', function () {
+    let result = {};
     beforeAll((done) => {
       request({
-        uri: `${url}/api/v1/auth/create-user`,
+        uri: `${url}/api/v1/auth/signin`,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         json: {
-          firstName: 'John',
-          lastName: 'Wicked',
           email: 'vadewusi@wiki.co',
           password: 'weak',
-          gender: 'Male',
-          jobRole: 'Developer',
-          department: 'Engineering',
-          address: 'Radisson Blu',
         },
       }, (err, res, body) => {
-        data = body;
+        result = body;
+        authNew = `Bearer ${body.data.token}`;
         done();
       });
     });
 
-    it('should return a status of success', function () {
-      expect(data.status).toBe('success');
+    it('should return a success message, a userId and a token', function () {
+      expect(result.status).toBe('success');
+      expect(result.data.token).not.toBeNull();
+      expect(result.data.userId).not.toBeNaN();
     });
-    it('should return a token', function () {
-      expect(data.data.token).not.toBeUndefined();
+  });
+
+  // Get request is made to retrieve the feed
+  describe('when a request is made to get all articles/gifs', function () {
+    let result = {};
+    beforeAll((done) => {
+      request.get(`${url}/api/v1/feed/`, {
+        json: true,
+        headers: {
+          Authorization: auth,
+        },
+      }, (err, res, body) => {
+        result = body;
+        done();
+      });
+    });
+
+    it('should return a body with status set to success', function () {
+      expect(result.status).toBe('success');
+    });
+    it('should return an array of articles', function () {
+      expect(result.data).not.toEqual([]);
+      expect(result.data[0].id).toBeDefined();
+      expect(result.data[0].id).not.toBeNaN();
+      expect(result.data[0].createdOn).toBeDefined();
+      expect(result.data[0].title).toBeDefined();
+      expect(result.data[0].url || result.data[0].article).toBeDefined();
+      expect(result.data[0].authorId).toBeDefined();
+      expect(result.data[0].authorId).not.toBeNaN();
+    });
+  });
+
+  /** Authentication Tests */
+
+  // Post request is made to create an article
+  describe('when a request is made to login', function () {
+    let result = {};
+    beforeAll((done) => {
+      request({
+        uri: `${url}/api/v1/articles`,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: auth,
+        },
+        json: {
+          title: 'Hello World',
+          article: 'Testing Hello World',
+        },
+      }, (err, res, body) => {
+        result = body;
+        done();
+      });
+    });
+
+    it('should return a success message', function () {
+      expect(result.status).toBe('success');
+    });
+    it('should contain a data object with message, articleId, createdOn and title', function () {
+      expect(result.data.message).toBe('Article successfully created');
+      expect(result.data.articleId).toBeGreaterThan(0);
+      expect(result.data.createdOn).toBeDefined();
+      expect(result.data.title).toBeDefined();
     });
   });
 });

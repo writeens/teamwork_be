@@ -303,42 +303,54 @@ const commentOnGIF = (req, res, next) => {
   });
 };
 
-// View all articles
+// View all articles and gifs
 const viewFeed = (req, res, next) => {
   db.connect((err, client, done) => {
     if (err) throw err;
-    client.query('SELECT * FROM articles UNION SELECT * FROM gifs', (queryError, queryResult) => {
+    client.query('SELECT * FROM articles', (queryError, queryResult) => {
       if (queryError) {
         res.status(501).json({
           status: 'error',
-          error: 'unable to query database',
+          message: 'unable to query database',
         });
       }
       if (queryResult) {
-        const result = queryResult.rows;
-        const data = result.map((item) => {
-          if (item.type === 'gif') {
-            return {
-              id: item.articleId,
-              createdOn: item.createdOn,
-              title: item.title,
-              url: item.article,
-              authorId: item.authorId,
-            };
+        const articleResult = queryResult.rows;
+        client.query('SELECT * FROM gifs', (newSelectQueryError, newSelectQueryResult) => {
+          if (newSelectQueryError) {
+            res.status(501).json({
+              status: 'error',
+              message: 'unable to query database',
+            });
           }
-          if (item.type === 'article') {
-            return {
-              id: item.articleId,
-              createdOn: item.createdOn,
-              title: item.title,
-              article: item.article,
-              authorId: item.authorId,
-            };
+          if (newSelectQueryResult) {
+            const gifResult = newSelectQueryResult.rows;
+            let result = [...articleResult, ...gifResult];
+            result = result.map((item) => {
+              if (item.type === 'article') {
+                return {
+                  id: item.articleId,
+                  createdOn: item.createdOn,
+                  title: item.title,
+                  article: item.article,
+                  authorId: item.authorId,
+                };
+              }
+              if (item.type === 'gif') {
+                return {
+                  id: item.gifId,
+                  createdOn: item.createdOn,
+                  title: item.title,
+                  url: item.imageUrl,
+                  authorId: item.authorId,
+                };
+              }
+            });
+            res.status(200).json({
+              status: 'success',
+              data: result,
+            });
           }
-        });
-        res.status(201).json({
-          status: 'success',
-          data,
         });
         done();
       }
