@@ -10,6 +10,12 @@ const db = require('../database/db');
 const createUser = (req, res, next) => {
   // Check DB If email exists
   db.connect((err, client, done) => {
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Check database credentials',
+      });
+    }
     client.query('SELECT * FROM users WHERE email=$1', [req.body.email], (selectQueryError, selectQueryResult) => {
       if (selectQueryError) throw err;
 
@@ -89,6 +95,12 @@ const createUser = (req, res, next) => {
 const signIn = (req, res, next) => {
   // Check DB if email exists
   db.connect((err, client, done) => {
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Check database credentials',
+      });
+    }
     client.query('SELECT * FROM users WHERE email=$1', [req.body.email], (selectQueryError, selectQueryResult) => {
       if (selectQueryError) throw err;
       // User Does Not Exist

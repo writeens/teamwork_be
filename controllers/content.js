@@ -36,7 +36,12 @@ const createGIF = (req, res, next) => {
 
 
       db.connect((err, client, done) => {
-        if (err) throw (err);
+        if (err) {
+          return res.status(500).json({
+            status: 'error',
+            message: 'Check database credentials',
+          });
+        }
         client.query('INSERT INTO gifs ("createdOn", title, "imageUrl", "authorId", "type", "publicId") VALUES(NOW(), $1, $2, $3, $4, $5)',
           [req.body.title, result.url, userId, 'gif', result.public_id], (InsertQueryError, InsertQueryResult) => {
             if (InsertQueryError) throw InsertQueryError;
@@ -69,7 +74,12 @@ const createGIF = (req, res, next) => {
 const createArticle = (req, res, next) => {
   const { userId } = req.decoded;
   db.connect((err, client, done) => {
-    if (err) throw err;
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Check database credentials',
+      });
+    }
     // Get userID from token in header
     if ((!req.body.title) || (!req.body.article) || (!userId)) {
       return res.status(400).json({
@@ -117,7 +127,12 @@ const updateArticle = (req, res, next) => {
   const { userId } = req.decoded;
   const { id } = req.params;
   db.connect((err, client, done) => {
-    if (err) throw err;
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Check database credentials',
+      });
+    }
     // Check if the user is the author of the post
     client.query('SELECT * FROM articles WHERE "authorId"=$1 AND "articleId"=$2',
       [userId, id], (selectQueryError, selectQueryResult) => {
@@ -156,7 +171,12 @@ const deleteArticle = (req, res, next) => {
   const { userId } = req.decoded;
   const { id } = req.params;
   db.connect((err, client, done) => {
-    if (err) throw err;
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Check database credentials',
+      });
+    }
     client.query('SELECT * FROM articles WHERE "authorId"=$1 AND "articleId"=$2',
       [userId, id], (selectQueryError, selectQueryResult) => {
         if (selectQueryError) throw selectQueryError;
@@ -197,7 +217,12 @@ const deleteGIF = (req, res, next) => {
   const { userId } = req.decoded;
   const { id } = req.params;
   db.connect((err, client, done) => {
-    if (err) throw err;
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Check database credentials',
+      });
+    }
     client.query('SELECT "publicId" FROM gifs WHERE "gifId" = $1 AND "authorId"=$2', [id, userId], (selectQueryError, selectQueryResult) => {
       if (selectQueryError) throw selectQueryError;
       if (selectQueryResult.rows.length === 0) {
@@ -230,6 +255,7 @@ const deleteGIF = (req, res, next) => {
                         message: 'gif post successfully deleted',
                       },
                     });
+                    done();
                   }
                 });
               }
@@ -246,6 +272,12 @@ const commentOnArticle = (req, res, next) => {
   const { userId } = req.decoded;
   const { id } = req.params;
   db.connect((err, client, done) => {
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Check database credentials',
+      });
+    }
     client.query('INSERT INTO "articleComments" ("createdOn", comment, "authorId", "articleId") VALUES(NOW(), $1, $2, $3)',
       [req.body.comment, userId, id], (insertQueryError, insertQueryResult) => {
         if (insertQueryError) throw insertQueryError;
@@ -279,7 +311,12 @@ const commentOnGIF = (req, res, next) => {
   const { userId } = req.decoded;
   const { id } = req.params;
   db.connect((err, client, done) => {
-    if (err) throw err;
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Check database credentials',
+      });
+    }
     // Add Comment to the Database
     client.query('INSERT INTO "gifComments" ("createdOn", comment, "authorId", "gifId") VALUES(NOW(), $1, $2, $3)',
       [req.body.comment, userId, id], (insertQueryError, insertQueryResult) => {
@@ -312,7 +349,12 @@ const commentOnGIF = (req, res, next) => {
 // View all articles and gifs
 const viewFeed = (req, res, next) => {
   db.connect((err, client, done) => {
-    if (err) throw err;
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Check database credentials',
+      });
+    }
     client.query('SELECT * FROM articles', (queryError, queryResult) => {
       if (queryError) {
         res.status(501).json({
@@ -368,7 +410,12 @@ const viewFeed = (req, res, next) => {
 const viewAnArticle = (req, res, next) => {
   const { id } = req.params;
   db.connect((err, client, done) => {
-    if (err) throw err;
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Check database credentials',
+      });
+    }
     // Get the article
     client.query('SELECT * FROM articles WHERE "articleId"=$1', [id], (selectQueryError, selectQueryResult) => {
       if (selectQueryError) throw selectQueryError;
@@ -412,7 +459,12 @@ const viewAGIF = (req, res, next) => {
   // const { userId } = req.decoded;
   const { id } = req.params;
   db.connect((err, client, done) => {
-    if (err) throw err;
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Check database credentials',
+      });
+    }
     // Get the GIF
     client.query('SELECT * FROM gifs WHERE "gifId"=$1', [id], (selectQueryError, selectQueryResult) => {
       if (selectQueryError) throw selectQueryError;
