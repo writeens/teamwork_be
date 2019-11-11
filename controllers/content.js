@@ -71,6 +71,12 @@ const createArticle = (req, res, next) => {
   db.connect((err, client, done) => {
     if (err) throw err;
     // Get userID from token in header
+    if ((!req.body.title) || (!req.body.article) || (!userId)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Check request parameters',
+      });
+    }
     client.query('INSERT INTO public.articles (title, article, "authorId", type, "createdOn") VALUES ($1, $2, $3, $4, NOW())',
       [req.body.title, req.body.article, userId, 'article'], (queryError, queryResult) => {
         if (queryError) {
@@ -80,7 +86,7 @@ const createArticle = (req, res, next) => {
           });
         }
         if (queryResult) {
-          client.query('SELECT * FROM articles WHERE "authorId"=1 ORDER BY "createdOn" DESC LIMIT 1', (newQueryError, newQueryResult) => {
+          client.query('SELECT * FROM articles WHERE "authorId"=$1 ORDER BY "createdOn" DESC LIMIT 1', [userId], (newQueryError, newQueryResult) => {
             const data = newQueryResult;
             if (newQueryError) {
               return res.status(501).json({
