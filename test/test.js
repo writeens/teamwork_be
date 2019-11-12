@@ -18,22 +18,6 @@ chai.use(chaiHttp);
 
 /** Unit Testing */
 describe('Testing Teamwork API', () => {
-  before(() => {
-
-    // chai.request(server)
-    //   .post('/api/v1/auth/create-user')
-    //   .set('Accept', 'application/json')
-    //   .send(user)
-    //   .end((err, res) => {
-    //     console.log(auth);
-    //     console.log(res.body.data.token);
-    //     auth = res.body.data.token;
-    //     expect(res.body.status).to.equal('success');
-    //     res.body.data.should.have.property('message');
-    //     res.body.data.should.have.property('token');
-    //     res.body.data.should.have.property('userId');
-    //   });
-  });
   after(() => {
     server.close();
   });
