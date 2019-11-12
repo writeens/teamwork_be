@@ -23,32 +23,32 @@ describe('Testing Teamwork API', () => {
   });
 
   // Create a User
-  // describe('create a new user', () => {
-  //   it('It should create a new user', (done) => {
-  //     const user = {
-  //       firstName: 'test',
-  //       lastName: 'test',
-  //       email: 'test@teamwork.com',
-  //       password: '12345',
-  //       gender: 'Male',
-  //       jobRole: 'Developer',
-  //       department: 'Engineering',
-  //       address: 'Lagos',
-  //     };
-  //     chai.request(server)
-  //       .post('/api/v1/auth/create-user')
-  //       .set('Accept', 'application/json')
-  //       .send(user)
-  //       .end((err, res) => {
-  //         expect(res.body.status).to.equal('success');
-  //         res.body.data.should.have.property('message');
-  //         res.body.data.should.have.property('token');
-  //         res.body.data.should.have.property('userId');
-  //         auth = res.body.data.token;
-  //       });
-  //     done();
-  //   });
-  // });
+  describe('create a new user', () => {
+    it('It should create a new user', (done) => {
+      const user = {
+        firstName: 'test',
+        lastName: 'test',
+        email: 'test@teamwork.com',
+        password: '12345',
+        gender: 'Male',
+        jobRole: 'Developer',
+        department: 'Engineering',
+        address: 'Lagos',
+      };
+      chai.request(server)
+        .post('/api/v1/auth/create-user')
+        .set('Accept', 'application/json')
+        .send(user)
+        .end((err, res) => {
+          expect(res.body.status).to.equal('success');
+          res.body.data.should.have.property('message');
+          res.body.data.should.have.property('token');
+          res.body.data.should.have.property('userId');
+          // auth = res.body.data.token;
+        });
+      done();
+    });
+  });
   // Create An Article
   describe('create an article', () => {
     it('It should create an article', (done) => {
