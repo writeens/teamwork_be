@@ -23,7 +23,7 @@ describe('Testing Teamwork API', () => {
   });
 
   // Create a User
-  describe.only('create a new user', () => {
+  describe('create a new user', () => {
     it('It should create a new user', (done) => {
       const user = {
         firstName: 'test',
@@ -40,17 +40,20 @@ describe('Testing Teamwork API', () => {
         .set('Accept', 'application/json')
         .send(user)
         .end((err, res) => {
-          expect(res.body.status).to.equal('success');
-          res.body.data.should.have.property('message');
-          res.body.data.should.have.property('token');
-          res.body.data.should.have.property('userId');
+          // console.log(res.body);
+          // console.log(process.env.NODE_ENV);
+          expect(res.body.status).to.equal('error');
+          expect(res.body.message).to.equal('User exists');
+          // res.body.data.should.have.property('message');
+          // res.body.data.should.have.property('token');
+          // res.body.data.should.have.property('userId');
           // auth = res.body.data.token;
         });
       done();
     });
   });
   // Create An Article
-  describe('create an article', () => {
+  describe.only('create an article', () => {
     it('It should create an article', (done) => {
       // console.log(auth);
       const article = {
