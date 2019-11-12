@@ -18,8 +18,9 @@ let connectionString = '';
 if (env === 'development') {
   connectionString = 'postgres://teamwork:teamwork@localhost/teamwork';
 } else {
-  connectionString = 'postgres://postgres:@localhost/teamwork';
+  connectionString = 'postgres://postgres:""@localhost/teamwork';
 }
+console.log(connectionString);
 // console.log(connectionString);
 const pool = new Pool({ connectionString });
 

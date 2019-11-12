@@ -67,6 +67,7 @@ describe('Testing Teamwork API', () => {
         .send(article)
         .end((err, res) => {
           // console.log(res.body);
+          // console.log(process.env);
           console.log(res.body);
           expect(res.body.status).to.equal('success');
           expect(res.body.data).to.include({
