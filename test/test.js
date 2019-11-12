@@ -54,7 +54,7 @@ describe('Testing Teamwork API', () => {
   });
   // Create An Article
   describe.only('create an article', () => {
-    it('It should create an article', (done) => {
+    it.only('It should create an article', (done) => {
       // console.log(auth);
       const article = {
         title: 'Hello',
@@ -66,7 +66,8 @@ describe('Testing Teamwork API', () => {
         .set('Authorization', `Bearer ${auth}`)
         .send(article)
         .end((err, res) => {
-          console.log(auth);
+          // console.log(res.body);
+          console.log(res.body);
           expect(res.body.status).to.equal('success');
           expect(res.body.data).to.include({
             message: 'Article successfully created',
