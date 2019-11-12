@@ -55,3 +55,4 @@ CREATE TABLE "gifComments"(
     "authorId" INTEGER REFERENCES users("id"),
     "articleId" INTEGER REFERENCES gifs("gifId")
 );
+--Insert Admin Details

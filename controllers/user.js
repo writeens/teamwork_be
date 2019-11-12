@@ -57,7 +57,7 @@ const createUser = (req, res, next) => {
                             { expiresIn: '24h' },
                           );
                           // Provide Response
-                          res.status(200).json({
+                          return res.status(200).json({
                             status: 'success',
                             data: {
                               message: 'User account successfully created',

@@ -8,6 +8,7 @@ const db = require('../database/db');
 const { dataUri } = require('../middleware/multer-config');
 // Dot Env Config
 dotenv.config();
+// console.log(process.env.CLOUD_NAME);
 // Cloudinary Config
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,

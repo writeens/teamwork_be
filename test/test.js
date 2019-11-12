@@ -1,25 +1,74 @@
-/* eslint-disable global-require */
+// /* eslint-disable global-require */
 /* eslint-disable no-undef */
-// \i /Users/Victor/Documents/Coding/Teamwork/teamwork_be/database/db.sql;
+// // \i /Users/Victor/Documents/Coding/Teamwork/teamwork_be/database/db.sql;
 const chai = require('chai');
-const chaiHttp = require('chai-http');
-const should = require('chai/register-should');
+const { expect } = require('chai');
 const dotenv = require('dotenv');
+const should = require('chai').should();
+const chaiHttp = require('chai-http');
 const server = require('../server');
+
+
+// const request = require('request');
 
 dotenv.config();
 const auth = process.env.ADMIN_TOKEN;
-const { expect } = chai;
+
 chai.use(chaiHttp);
 
+/** Unit Testing */
 describe('Testing Teamwork API', () => {
+  before(() => {
+
+    // chai.request(server)
+    //   .post('/api/v1/auth/create-user')
+    //   .set('Accept', 'application/json')
+    //   .send(user)
+    //   .end((err, res) => {
+    //     console.log(auth);
+    //     console.log(res.body.data.token);
+    //     auth = res.body.data.token;
+    //     expect(res.body.status).to.equal('success');
+    //     res.body.data.should.have.property('message');
+    //     res.body.data.should.have.property('token');
+    //     res.body.data.should.have.property('userId');
+    //   });
+  });
   after(() => {
     server.close();
   });
 
+  // Create a User
+  // describe('create a new user', () => {
+  //   it('It should create a new user', (done) => {
+  //     const user = {
+  //       firstName: 'test',
+  //       lastName: 'test',
+  //       email: 'test@teamwork.com',
+  //       password: '12345',
+  //       gender: 'Male',
+  //       jobRole: 'Developer',
+  //       department: 'Engineering',
+  //       address: 'Lagos',
+  //     };
+  //     chai.request(server)
+  //       .post('/api/v1/auth/create-user')
+  //       .set('Accept', 'application/json')
+  //       .send(user)
+  //       .end((err, res) => {
+  //         expect(res.body.status).to.equal('success');
+  //         res.body.data.should.have.property('message');
+  //         res.body.data.should.have.property('token');
+  //         res.body.data.should.have.property('userId');
+  //         auth = res.body.data.token;
+  //       });
+  //     done();
+  //   });
+  // });
   // Create An Article
   describe('create an article', () => {
     it('It should create an article', (done) => {
+      // console.log(auth);
       const article = {
         title: 'Hello',
         article: 'Hello World',
