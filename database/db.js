@@ -18,7 +18,7 @@ let connectionString = '';
 if (env === 'development') {
   connectionString = 'postgres://teamwork:teamwork@localhost/teamwork';
 } else {
-  connectionString = 'postgres://postgres:""@localhost/teamwork';
+  connectionString = 'postgres://postgres@127.0.0.1:5432/teamwork';
 }
 console.log(connectionString);
 // console.log(connectionString);
