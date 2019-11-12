@@ -23,7 +23,7 @@ describe('Testing Teamwork API', () => {
   });
 
   // Create a User
-  describe('create a new user', () => {
+  describe.only('create a new user', () => {
     it('It should create a new user', (done) => {
       const user = {
         firstName: 'test',
