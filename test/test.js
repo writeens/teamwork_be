@@ -141,6 +141,7 @@ describe('Create an Article', function() {
       .set('Accept', 'application/json')
       .set('Authorization', `Bearer ${token}`)
       .end((err, res) => {
+        console.log(res);
         expect(res.body.status).to.equal('success');
         expect(res.body).to.include({data:res.body.data})
         // expect(res.body.data[0]).to.include({

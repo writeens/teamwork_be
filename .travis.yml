@@ -3,6 +3,8 @@ node_js:
     - "node"
 services:
     - "postgresql"
+cache:
+    -node_modules
 before_script:
     # 
     # - psql -f './database/install.sql'
