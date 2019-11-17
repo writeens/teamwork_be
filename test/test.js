@@ -138,7 +138,7 @@ after(() => {
   })
 })
 
-describe('View Feed', () => {
+describe('View Feed', function() {
   // Use before Hook to get token for subsequent tests
   before(async () => {
     server.listen(process.env.PORT || 3000);
