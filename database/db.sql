@@ -1,4 +1,5 @@
--- Create Database on Local Machine
+--  \cd /Users/Victor/Documents/Coding/Teamwork/teamwork_be/database
+-- DROP DATABASE IF EXISTS testDB;
 -- CREATE DATABASE testDB
 --     WITH 
 --     OWNER = postgres
@@ -7,6 +8,11 @@
 --     LC_CTYPE = 'English_United States.1252'
 --     TABLESPACE = pg_default
 --     CONNECTION LIMIT = -1;
+
+-- Create Database on Local Machine
+CREATE DATABASE testdb;
+
+\connect testdb;
 
 -- Create The Users Table
 CREATE TABLE users(
@@ -55,4 +61,7 @@ CREATE TABLE "gifComments"(
     "authorId" INTEGER REFERENCES users("id"),
     "articleId" INTEGER REFERENCES gifs("gifId")
 );
+
 --Insert Admin Details
+INSERT INTO users("firstName", "lastName", email, password, gender, "jobRole", department, address)
+VALUES('admin', 'admin', 'admin@teamwork.com', '$2b$08$/P4uAOelOZCrY09asow2P.ZOOEHwCa96kaBbI4zdiWd57w2ypPLFW', 'Male', 'Software Developer', 'Teamwork', 'Remote');

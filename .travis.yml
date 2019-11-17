@@ -1,11 +1,12 @@
 language: "node_js"
+os: "windows"
 node_js:
     - "node"
 services:
     - "postgresql"
 before_script:
-    - psql -c 'create database teamwork;' -U postgres
-    - psql -f './database/db.sql'
+    # - psql -c 'create database teamwork;' -U postgres
+    # - psql -f './database/install.sql'
 addons:
     postgresql: "10"
     apt:

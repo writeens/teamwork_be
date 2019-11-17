@@ -1,0 +1,2 @@
+DROP DATABASE IF EXISTS testdb;
+DROP user IF EXISTS testdbuser;

@@ -8,7 +8,6 @@ module.exports = (req, res, next) => {
         // Decode Token
         jwt.verify(token, 'TEAMWORK', (err, decoded) => {
             if (err) {
-                console.log(err);
             return res.status(401).json({
                 status: 'error',
                 message: 'Unable to verify user',

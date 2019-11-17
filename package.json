@@ -4,8 +4,10 @@
   "description": "API developed for the back-end processes for the Teamwork application",
   "main": "server.js",
   "scripts": {
-    "test": "mocha",
-    "start": "nodemon server.js"
+    "test": "set NODE_ENV=test && mocha",
+    "pretest": "psql -U postgres -a -f database/install.sql",
+    "start": "node server.js",
+    "start:dev": "set NODE_ENV=test & nodemon server.js"
   },
   "repository": {
     "type": "git",
