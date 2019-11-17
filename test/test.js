@@ -98,9 +98,6 @@ describe('Create an Article', function() {
   }
   this.token = await getData(options);
 });
-after(() => {
-  server.close();
-});
 
   const article = {
     title: 'Hello',
@@ -136,6 +133,10 @@ after(() => {
       })
       done();
   })
+  
+  after(() => {
+    server.close();
+  });
 })
 
 describe('View Feed', function() {
@@ -154,17 +155,14 @@ describe('View Feed', function() {
   }
     this.token = await getData(options);
   });
-  after(() => {
-    server.close();
-  });
-  it('It should return all the articles and GIFs', (done) => {
+
+  it('It should return all the articles and GIFs', async () => {
+    const token = await this.token;
     chai.request(server)
       .get('/api/v1/feed')
       .set('Accept', 'application/json')
-      .set('Authorization', `Bearer ${this.token}`)
+      .set('Authorization', `Bearer ${token}`)
       .end((err, res) => {
-        console.log(this.token);
-        console.log(res.body);
         expect(res.body.status).to.equal('success');
         expect(res.body).to.include({data:res.body.data})
         // expect(res.body.data[0]).to.include({
@@ -175,9 +173,8 @@ describe('View Feed', function() {
 
         // })
       });
-    done();
   });
-  it('It should return an error message for wrong token', (done) => {
+  it('It should return an error message for wrong token', async() => {
     chai.request(server)
       .get('/api/v1/feed')
       .set('Accept', 'application/json')
@@ -186,6 +183,9 @@ describe('View Feed', function() {
         expect(res.body.status).to.equal('error');
         expect(res.body.message).to.equal('Unable to verify user')
       })
-      done();
   })
+
+  after(() => {
+    server.close();
+  });
 });
