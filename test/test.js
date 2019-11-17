@@ -127,6 +127,7 @@ describe('Create an Article', function() {
       .set('Accept', 'application/json')
       .send(article)
       .end((err, res) => {
+        console.log(res.body);
         expect(res.body).to.include({
           status:"error",
           message:res.body.message})
