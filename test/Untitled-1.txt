@@ -1,0 +1,60 @@
+// // Create An Article
+// describe('create an article', () => {
+//   it('It should create an article', (done) => {
+//     // console.log(auth);
+//     const article = {
+//       title: 'Hello',
+//       article: 'Hello World',
+//     };
+//     chai.request(server)
+//       .post('/api/v1/articles')
+//       .set('Accept', 'application/json')
+//       .set('Authorization', `Bearer ${auth}`)
+//       .send(article)
+//       .end((err, res) => {
+//         // console.log(res.body);
+//         // console.log(process.env);
+//         console.log(res.body);
+//         expect(res.body.status).to.equal('success');
+//         expect(res.body.data).to.include({
+//           message: 'Article successfully created',
+//           articleId: res.body.data.articleId,
+//           createdOn: res.body.data.createdOn,
+//           title: article.title,
+//         });
+//       });
+//     done();
+//   });
+
+//   it('It should return error message when parameters are incomplete', (done) => {
+//     const article = {
+//       title: 'Hello',
+//     };
+//     chai.request(server)
+//       .post('/api/v1/articles')
+//       .set('Accept', 'application/json')
+//       .set('Authorization', `Bearer ${auth}`)
+//       .send(article)
+//       .end((err, res) => {
+//         expect(res.body.status).to.equal('error');
+//         expect(res.body.message).to.equal('Check request parameters');
+//       });
+//     done();
+//   });
+
+//   it('It should return an error messsage when authentication is not provided', (done) => {
+//     const article = {
+//       title: 'Hello',
+//       article: 'Hello World',
+//     };
+//     chai.request(server)
+//       .post('/api/v1/articles')
+//       .set('Accept', 'application/json')
+//       .send(article)
+//       .end((err, res) => {
+//         expect(res.body.status).to.equal('error');
+//         expect(res.body.message).to.equal('Invalid authorization, Check token');
+//       });
+//     done();
+//   });
+// });

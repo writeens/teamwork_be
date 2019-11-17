@@ -163,6 +163,8 @@ describe('View Feed', function() {
       .set('Accept', 'application/json')
       .set('Authorization', `Bearer ${this.token}`)
       .end((err, res) => {
+        console.log(this.token);
+        console.log(res.body);
         expect(res.body.status).to.equal('success');
         expect(res.body).to.include({data:res.body.data})
         // expect(res.body.data[0]).to.include({
