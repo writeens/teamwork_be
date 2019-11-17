@@ -133,28 +133,6 @@ describe('Create an Article', function() {
       })
       done();
   })
-  
-  after(() => {
-    server.close();
-  });
-})
-
-describe('View Feed', function() {
-  // Use before Hook to get token for subsequent tests
-  before(async () => {
-    server.listen(process.env.PORT || 3000);
-    const user = {
-      email: 'admin@teamwork.com',
-      password: '12345'
-    };
-  const options = {
-    uri: `${process.env.baseURL}/api/v1/auth/signin`,
-    method: 'POST',
-    body: user,
-    json: true,
-  }
-    this.token = await getData(options);
-  });
 
   it('It should return all the articles and GIFs', async () => {
     const token = await this.token;
@@ -188,4 +166,28 @@ describe('View Feed', function() {
   after(() => {
     server.close();
   });
-});
+})
+
+// describe('View Feed', function() {
+//   // Use before Hook to get token for subsequent tests
+//   before(async () => {
+//     server.listen(process.env.PORT || 3000);
+//     const user = {
+//       email: 'admin@teamwork.com',
+//       password: '12345'
+//     };
+//   const options = {
+//     uri: `${process.env.baseURL}/api/v1/auth/signin`,
+//     method: 'POST',
+//     body: user,
+//     json: true,
+//   }
+//     this.token = await getData(options);
+//   });
+
+  
+
+//   after(() => {
+//     server.close();
+//   });
+// });
