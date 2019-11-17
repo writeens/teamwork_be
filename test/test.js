@@ -9,7 +9,7 @@ const chaiHttp = require('chai-http');
 const server = require('../server');
 
 //Close server
-server.close()
+server.close();
 dotenv.config();
 
 chai.use(chaiHttp);
@@ -22,7 +22,7 @@ const getData = (options) => {
 }
 
 /** Unit Testing */
-describe('Testing Teamwork API', () => {
+describe('Testing Teamwork API', function () {
   before(() => {
     server.listen(process.env.HOST || 3000);
   })
@@ -57,7 +57,7 @@ describe('Testing Teamwork API', () => {
       done();
     });
   });
-  describe('Sign in with New User', () => {
+  describe('Sign in with New User', function () {
     it('sign in', (done) => {
       const user = {
         email: 'admin@teamwork.com',
@@ -164,6 +164,7 @@ describe('View Feed', () => {
       .set('Authorization', `Bearer ${this.token}`)
       .end((err, res) => {
         expect(res.body.status).to.equal('success');
+        expect(res.body).to.include({data:res.body.data})
         expect(res.body.data[0]).to.include({
           id: res.body.data[0].id,
           createdOn: res.body.data[0].createdOn,
