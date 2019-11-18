@@ -85,7 +85,7 @@ const createArticle = (req, res, next) => {
     if ((!req.body.title) || (!req.body.article) || (!userId)) {
       return res.status(400).json({
         status: 'error',
-        message: 'Check request parameters',
+        message: 'Check request body and/or parameters',
       });
     }
     client.query('INSERT INTO public.articles (title, article, "authorId", type, "createdOn") VALUES ($1, $2, $3, $4, NOW())',

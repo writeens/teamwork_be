@@ -93,6 +93,13 @@ const createUser = (req, res, next) => {
 };
 
 const signIn = (req, res, next) => {
+  // Check if email and password is provided
+  if (!req.body.email || !req.body.password) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Identity verification unavailable',
+    });
+  }
   // Check DB if email exists
   db.connect((err, client, done) => {
     if (err) {
