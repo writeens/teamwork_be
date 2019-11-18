@@ -47,7 +47,7 @@ describe('Authentication', function () {
     });
   });
 
-  after(() => {
+  after(async () => {
     server.close();
   });
 
