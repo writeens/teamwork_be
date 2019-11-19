@@ -10,6 +10,8 @@ before_script:
     # - psql -f './database/install.sql'
 after_script:
     - psql -c 'drop database testdb;' -U postgres
+after_success:
+    - npm run coverage
 addons:
     postgresql: "10"
     apt:
