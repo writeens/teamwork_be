@@ -114,7 +114,7 @@ const signIn = (req, res, next) => {
       if (selectQueryResult.rowCount <= 0) {
         res.status(400).json({
           status: 'error',
-          message: 'User already exists',
+          message: 'User does not exist',
         });
       }
       // User Exists
