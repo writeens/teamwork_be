@@ -342,6 +342,7 @@ describe('Authentication', function () {
         .delete('/api/v1/articles/a3z')
         .set('Authorization', `Bearer ${adminToken}`)
         .end((err, res) => {
+          console.log(res);
           expect(res).to.have.status(400);
           expect(res.body.status).to.equal('error');
           expect(res.body.message).to.equal('Check request body and/or parameters');
