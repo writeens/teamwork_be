@@ -336,12 +336,12 @@ describe('Authentication', function () {
         });
       return done();
     });
-    it('It should throw an error when an invalid article is referenced', (done) => {
+    it('It should throw an error when an invalid article is referenced', async (done) => {
+      await adminToken;
       chai.request(server)
         .delete('/api/v1/articles/a3z')
         .set('Authorization', `Bearer ${adminToken}`)
         .end((err, res) => {
-          console.log(res.body);
           expect(res).to.have.status(400);
           expect(res.body.status).to.equal('error');
           expect(res.body.message).to.equal('Check request body and/or parameters');

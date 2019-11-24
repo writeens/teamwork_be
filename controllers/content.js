@@ -182,7 +182,6 @@ const deleteArticle = (req, res, next) => {
   const { userId } = req.decoded;
   const { id } = req.params;
   const num = parseInt(id, 10);
-  console.log(isNaN(num));
   if ((!req.params) || (!userId) || isNaN(num)) {
     return res.status(400).json({
       status: 'error',
