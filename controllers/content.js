@@ -180,7 +180,8 @@ const updateArticle = (req, res, next) => {
 const deleteArticle = (req, res, next) => {
   const { userId } = req.decoded;
   const { id } = req.params;
-  if ((!req.params) || (!userId)) {
+  const num = parseInt(id, 10);
+  if ((!req.params) || (!userId) || isNaN(num)) {
     return res.status(400).json({
       status: 'error',
       message: 'Check request body and/or parameters',
