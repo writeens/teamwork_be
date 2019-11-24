@@ -336,7 +336,7 @@ describe('Authentication', function () {
         });
       return done();
     });
-    it('It should throw an error when an invalid article is referenced', async (done) => {
+    it('It should throw an error when an invalid article is referenced', async () => {
       await adminToken;
       chai.request(server)
         .delete('/api/v1/articles/a3z')
@@ -346,7 +346,7 @@ describe('Authentication', function () {
           expect(res.body.status).to.equal('error');
           expect(res.body.message).to.equal('Check request body and/or parameters');
         });
-      return done();
+      // return done();
     });
     it('It should throw an error when authentication is not provided', (done) => {
       chai.request(server)
