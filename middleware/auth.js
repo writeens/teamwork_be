@@ -17,7 +17,7 @@ module.exports = (req, res, next) => {
             next();
         });
     } catch {
-        res.status(400).json({
+        res.status(401).json({
             status:"error",
             message:"Invalid authorization, Check token"
         });

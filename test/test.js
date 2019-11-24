@@ -5,17 +5,17 @@
 // // \i /Users/Victor/Documents/Coding/Teamwork/teamwork_be/database/db.sql;
 const chai = require('chai');
 const { expect } = require('chai');
-const dotenv = require('dotenv').config();
+const dotenv = require('dotenv');
 const request = require('request');
 const chaiHttp = require('chai-http');
 const server = require('../server');
 
+dotenv.config();
 // Close server
 server.close();
 
 // Variables
 let adminToken;
-let usertoken;
 
 chai.use(chaiHttp);
 
@@ -207,6 +207,154 @@ describe('Authentication', function () {
           expect(res).to.have.status(400);
           expect(res.body.status).to.equal('error');
           expect(res.body.message).to.equal('Check request body and/or parameters');
+        });
+      return done();
+    });
+  });
+
+  // View Feed
+  describe('View all the articles and gifs when all credentials are provided', function () {
+    it('It should return a list of gifs and articles', (done) => {
+      chai.request(server)
+        .get('/api/v1/feed')
+        .set('Accept', 'application/json')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          expect(res.body).to.include({ status: 'success' });
+          expect(res.body.data[0]).to.include({
+            id: res.body.data[0].id,
+            createdOn: res.body.data[0].createdOn,
+            title: res.body.data[0].title,
+            authorId: res.body.data[0].authorId,
+          });
+          return done();
+        });
+    });
+    it('It should throw an error when authentication is not provided', (done) => {
+      chai.request(server)
+        .get('/api/v1/feed')
+        .set('Accept', 'application/json')
+        .set('Authorization', `Bearer ${12345}`)
+        .end((err, res) => {
+          expect(res).to.have.status(401);
+          expect(res.body.status).to.equal('error');
+          expect(res.body.message).to.equal('Unable to verify user');
+        });
+      return done();
+    });
+  });
+
+  // Update an Article
+  describe('Update the content of an article', function () {
+    const article = {
+      title: 'Goodbye',
+      article: 'Cruel World',
+    };
+    it('It should update the database and return success when the right credentials are provided', (done) => {
+      chai.request(server)
+        .put('/api/v1/articles/1')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send(article)
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          expect(res.body.data).to.include({
+            message: res.body.data.message,
+            title: article.title,
+            article: article.article,
+          });
+          return done();
+        });
+    });
+
+    it('It should throw an error when the title is not provided in the body', (done) => {
+      chai.request(server)
+        .put('/api/v1/articles/1')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          article: article.article,
+        })
+        .end((err, res) => {
+          expect(res).to.have.status(400);
+          expect(res.body.status).to.be.equal('error');
+          expect(res.body.message).to.be.equal('Check request body and/or parameters');
+        });
+      return done();
+    });
+
+    it('It should throw an error when the article is not provided in the body', (done) => {
+      chai.request(server)
+        .put('/api/v1/articles/1')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          title: article.title,
+        })
+        .end((err, res) => {
+          expect(res).to.have.status(400);
+          expect(res.body.status).to.be.equal('error');
+          expect(res.body.message).to.be.equal('Check request body and/or parameters');
+        });
+      return done();
+    });
+
+    it('It should throw an error when authentication is not provided', (done) => {
+      chai.request(server)
+        .put('/api/v1/articles/1')
+        .set('Authorization', `Bearer ${12345}`)
+        .end((err, res) => {
+          expect(res).to.have.status(401);
+          expect(res.body.status).to.equal('error');
+          expect(res.body.message).to.equal('Unable to verify user');
+        });
+      return done();
+    });
+  });
+
+  // Delete an Article
+  describe('Deleting an article', function () {
+    it('It should delete an article when provided with the right credentials', (done) => {
+      chai.request(server)
+        .delete('/api/v1/articles/1')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .end((err, res) => {
+          expect(res).to.have.status(200);
+          expect(res.body.status).to.equal('success');
+          expect(res.body.data).to.include({
+            message: 'Article successfully deleted',
+          });
+        });
+      return done();
+    });
+    it('It should throw an error when you try to delete an article you did not create', (done) => {
+      chai.request(server)
+        .delete('/api/v1/articles/5')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .end((err, res) => {
+          expect(res).to.have.status(400);
+          expect(res.body.status).to.equal('error');
+          expect(res.body.message).to.equal('You are not authorized to delete this post');
+        });
+      return done();
+    });
+    it('It should throw an error when an invalid article is referenced', (done) => {
+      chai.request(server)
+        .delete('/api/v1/articles/a3z')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .end((err, res) => {
+          expect(res).to.have.status(400);
+          expect(res.body.status).to.equal('error');
+          expect(res.body.message).to.equal('Check request body and/or parameters');
+        });
+      return done();
+    });
+    it('It should throw an error when authentication is not provided', (done) => {
+      chai.request(server)
+        .delete('/api/v1/articles/1')
+        .set('Authorization', `Bearer ${12345}`)
+        .end((err, res) => {
+          expect(res).to.have.status(401);
+          expect(res.body.status).to.equal('error');
+          expect(res.body.message).to.equal('Unable to verify user');
         });
       return done();
     });

@@ -74,18 +74,18 @@ const createGIF = (req, res, next) => {
 // Create an Article controller
 const createArticle = (req, res, next) => {
   const { userId } = req.decoded;
+  // Get userID from token in header
+  if ((!req.body.title) || (!req.body.article) || (!userId)) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Check request body and/or parameters',
+    });
+  }
   db.connect((err, client, done) => {
     if (err) {
       return res.status(500).json({
         status: 'error',
         message: 'Check database credentials',
-      });
-    }
-    // Get userID from token in header
-    if ((!req.body.title) || (!req.body.article) || (!userId)) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Check request body and/or parameters',
       });
     }
     client.query('INSERT INTO public.articles (title, article, "authorId", type, "createdOn") VALUES ($1, $2, $3, $4, NOW())',
@@ -125,8 +125,17 @@ const createArticle = (req, res, next) => {
 
 // Update Article controller
 const updateArticle = (req, res, next) => {
+  // Get userID from token in header
   const { userId } = req.decoded;
   const { id } = req.params;
+  // Ensure the req.body has the right content
+  if ((!req.body.title) || (!req.body.article) || (!userId)) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Check request body and/or parameters',
+    });
+  }
+  // Make sure
   db.connect((err, client, done) => {
     if (err) {
       return res.status(500).json({
@@ -171,6 +180,12 @@ const updateArticle = (req, res, next) => {
 const deleteArticle = (req, res, next) => {
   const { userId } = req.decoded;
   const { id } = req.params;
+  if ((!req.params) || (!userId)) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Check request body and/or parameters',
+    });
+  }
   db.connect((err, client, done) => {
     if (err) {
       return res.status(500).json({

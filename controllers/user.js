@@ -31,7 +31,7 @@ const createUser = (req, res, next) => {
                 [req.body.firstName, req.body.lastName, req.body.email, `${hash}`, req.body.gender, req.body.jobRole, req.body.department, req.body.address],
                 (insertQueryError, insertQueryResult) => {
                   if (insertQueryError) {
-                    res.status(400).json({
+                    res.status(500).json({
                       status: 'error',
                       message: 'unable to create user, please try again',
                     });
@@ -43,7 +43,7 @@ const createUser = (req, res, next) => {
                     client.query('SELECT * FROM users WHERE password=$1', [hash],
                       (selectQueryError, selectQueryResult) => {
                         if (selectQueryError) {
-                          res.status(200).json({
+                          res.status(400).json({
                             status: 'error',
                             message: 'unable to find user',
                           });
@@ -124,7 +124,7 @@ const signIn = (req, res, next) => {
         bcrypt.compare(req.body.password, data.password).then(
           (valid) => {
             if (!valid) {
-              return res.status(401).json({
+              return res.status(400).json({
                 status: 'error',
                 message: 'Incorrect password',
               });
