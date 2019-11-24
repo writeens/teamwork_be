@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 const dotenv = require('dotenv');
 // Import Cloudinary
 const cloudinary = require('cloudinary').v2;
@@ -181,6 +182,7 @@ const deleteArticle = (req, res, next) => {
   const { userId } = req.decoded;
   const { id } = req.params;
   const num = parseInt(id, 10);
+  console.log(isNaN(num));
   if ((!req.params) || (!userId) || isNaN(num)) {
     return res.status(400).json({
       status: 'error',
